@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Make sure umask is 077, only root can exe this script
+umask 077
+
+SNAME=agent_application
+RETVAL=0
+
+#the full path and name of the daemon program
+#Warning: The name of executable file must be identical with service name
+
+cd [WorkingDirectory]
+[ -d /var/lock/subsys/ ] || mkdir -p /var/lock/subsys/
+
+# check program is exists
+
+function start(){
+
+    #check the daemon status first
+    if [ -f /var/lock/subsys/$SNAME ]
+    then
+        echo "$SNAME is already started!"
+        exit 1;
+    else
+        echo "Starting $SNAME ..."
+        ulimit -S -c 0 > /dev/null 2>&1
+        [ExecStart] > /dev/null 2>&1 &
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$SNAME
+        return $RETVAL;
+    fi
+
+}
+
+function stop(){
+    echo "Stopping $SNAME ..."
+    pid=`ps gaux |grep "[ExecStart]" |grep -v grep| awk {'print $2'}`
+    if [ -n "$pid" ]
+    then
+        kill -2 $pid > /dev/null 2>&1
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && rm -rf /var/lock/subsys/$SNAME
+    else
+        rm -rf /var/lock/subsys/$SNAME
+        RETVAL=$?
+    fi
+    return $RETVAL
+}
+
+case "$1" in
+    "start" )
+        start
+        ;;
+    "stop" )
+        stop
+        ;;
+    "restart" )
+        stop
+        start
+        ;;
+    * )
+        echo "Usage $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit $?

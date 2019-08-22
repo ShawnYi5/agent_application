@@ -1,0 +1,15 @@
+[Unit]
+Description=agent_application.service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=[WorkingDirectory]
+ExecStart=[ExecStart]
+Restart=always
+KillSignal=SIGINT
+Environment=MALLOC_ARENA_MAX=1
+Environment=MALLOC_MMAP_MAX_=655360
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,32 @@
+stages:
+  - runall
+
+runall_job_x86:
+  stage: runall
+  script:
+    - 'pwd'
+    - 'ls -al'
+    - 'git submodule update --init -- "rpc_ice"'
+    - 'chmod 754 cxfreeze_build.sh'
+    - './cxfreeze_build.sh'
+    - 'chmod 754 cp_x86.sh'
+    - './cp_x86.sh'
+  tags:
+    - centos_5_x86
+  only:
+    - master
+
+runall_job_x64:
+  stage: runall
+  script:
+    - 'pwd'
+    - 'ls -al'
+    - 'git submodule update --init -- "rpc_ice"'
+    - 'chmod 754 cxfreeze_build.sh'
+    - './cxfreeze_build.sh'
+    - 'chmod 754 cp_x64.sh'
+    - './cp_x64.sh'
+  tags:
+    - centos_5_x64
+  only:
+    - master
